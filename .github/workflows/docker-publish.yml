@@ -61,5 +61,5 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           git add ./binder/*
-          git commit -m "Updating Binder Dockerfile for commit $COMMIT_SHA [skip actions]"
+          git commit -m "Updating Binder Dockerfile for commit: $COMMIT_SHA [skip actions]"
           git push
