@@ -14,6 +14,11 @@ COPY docker/vivado_cfg.txt /tmp/vivado_cfg.txt
 COPY docker/install_vivado.sh /tmp/install_vivado.sh
 RUN source /tmp/install_vivado.sh && rm /tmp/install_vivado.sh
 
+# Copy tutorial contents into container
+COPY . ${HOME}/hls4ml-tutorial
+USER root
+RUN chown -R ${NB_UID} ${HOME}
+
 # Install hls4ml and dependencies
 USER ${NB_USER}
 RUN mamba install -y -c conda-forge \

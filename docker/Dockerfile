@@ -1,5 +1,10 @@
 FROM jupyter/tensorflow-notebook:tensorflow-2.11.1
 
+# Copy tutorial contents into container
+COPY . ${HOME}/hls4ml-tutorial
+USER root
+RUN chown -R ${NB_UID} ${HOME}
+
 # Install hls4ml and dependencies
 USER ${NB_USER}
 RUN mamba install -y -c conda-forge \

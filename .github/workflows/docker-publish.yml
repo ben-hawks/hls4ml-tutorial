@@ -51,6 +51,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_TAG }}:latest
             ${{ env.IMAGE_TAG }}:${{ env.COMMIT_SHA }}
+          with: |
+            context: .
       - 
         name: "Update Binder shim Dockerfile"
         run: |
