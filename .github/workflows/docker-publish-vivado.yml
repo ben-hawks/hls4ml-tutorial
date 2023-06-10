@@ -1,0 +1,79 @@
+name: docker-publish-vivado
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+  push:
+    branches:
+      - 'main'
+
+env: 
+  IMAGE_TAG_SLUG: hls4ml-0.7.1-vivado-2019.2
+  REGISTRY: ghcr.io
+  REPO_NAME: ${{ github.repository }}
+  COMMIT_SHA: ${{ github.sha }}
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@v1.2.0
+        with:
+          tool-cache: true
+      - 
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: 'main'
+      - 
+        name: "Set environmental variables"
+        run: |
+          echo "IMAGE_TAG=$REGISTRY/$REPO_NAME/$IMAGE_TAG_SLUG" >> $GITHUB_ENV
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Build and push - Vivado image
+        uses: docker/build-push-action@v4
+        with:
+          push: ${{ github.event_name != 'pull_request' }}
+          file: docker/Dockerfile.vivado
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            ${{ env.IMAGE_TAG }}:latest
+            ${{ env.IMAGE_TAG }}:${{ env.COMMIT_SHA }}
+      - # switch to seperate branch to add binder 
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: 'binder-vivado'
+      -
+        name: Merge changes from main into binder-vivado
+        run: |
+          git merge -s theirs main
+      - 
+        name: Update Binder shim Dockerfile
+        run: |
+          source $GITHUB_WORKSPACE/binder/write_binder_dockerfile.sh
+          
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    
+          git add -A
+          git commit -m "Updating binder-vivado to main:$COMMIT_SHA [skip actions]"
+          git push

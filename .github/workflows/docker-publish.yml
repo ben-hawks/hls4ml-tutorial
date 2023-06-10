@@ -54,7 +54,7 @@ jobs:
       - 
         name: "Update Binder shim Dockerfile"
         run: |
-          source ./binder/write_binder_dockerfile.sh
+          source $GITHUB_WORKSPACE/binder/write_binder_dockerfile.sh
           
       - name: Commit and push changes
         run: |
