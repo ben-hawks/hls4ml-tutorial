@@ -1,1 +1,1 @@
-FROM ghcr.io/ben-hawks/hls4ml-tutorial/hls4ml-0.7.1-tutorial:aab9d5c7ff64f373dd3bdd593946462f601e2deb
+FROM ghcr.io/ben-hawks/hls4ml-tutorial/hls4ml-0.7.1-tutorial:525db6658355a24c2fbc2cf1c25c431409eba61b
